@@ -18,6 +18,6 @@ export class DemoPipelineStack extends Stack {
       })
     })
 
-    pipeline.addStage(new AppStage(this, 'test'))
+    // pipeline.addStage(new AppStage(this, 'test'))
   }
 }
