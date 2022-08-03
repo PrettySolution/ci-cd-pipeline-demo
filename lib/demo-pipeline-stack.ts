@@ -12,9 +12,9 @@ export class DemoPipelineStack extends Stack {
       pipelineName: 'demo-pipeline',
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', 'main'),
-        commands: ['ls -la', 'npm ci', 'npm run build', 'npx cdk synth'],
+        commands: ['pwd', 'ls -la', 'ls ../ -la', 'npm ci', 'npm run build', 'npx cdk synth'],
         additionalInputs: {
-          './angular': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', 'main', {
+          '../ci-cd-fe-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', 'main', {
             trigger: GitHubTrigger.WEBHOOK
           })
         }
@@ -22,5 +22,10 @@ export class DemoPipelineStack extends Stack {
     })
 
     pipeline.addStage(new AppStage(this, 'test', {}))
+
+    pipeline.addStage(new AppStage(this, 'uat', {
+      env: {account: '160810069147', region: 'us-west-2'}
+    }))
+
   }
 }
