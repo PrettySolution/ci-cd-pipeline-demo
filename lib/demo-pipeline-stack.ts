@@ -1,16 +1,23 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import {Stack, StackProps} from 'aws-cdk-lib';
+import {Construct} from 'constructs';
+import {CodePipeline, CodePipelineSource, ShellStep} from "aws-cdk-lib/pipelines";
+import {AppStage} from "./app-stage";
 
 export class DemoPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const pipeline = new CodePipeline(this, 'pipeline', {
+      pipelineName: 'demo-pipeline',
+      synth: new ShellStep('Synth', {
+        input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', 'main'),
+        commands: ['npm ci', 'npm run build', 'npx cdk synth', 'll'],
+        additionalInputs: {
+          '../angular': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', 'main')
+        }
+      })
+    })
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'DemoPipelineQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    pipeline.addStage(new AppStage(this, 'test'))
   }
 }
