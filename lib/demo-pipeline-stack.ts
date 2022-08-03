@@ -21,12 +21,13 @@ export class DemoPipelineStack extends Stack {
       })
     })
 
-    const testStage = pipeline.addStage(new AppStage(this, 'test', {}))
+    pipeline.addStage(new AppStage(this, 'stage', {
+      env: {region: 'eu-central-1'}
+    }))
+      .addPost(new ManualApprovalStep('Are you sure you want to deploy in production?'))
 
-    testStage.addPost(new ManualApprovalStep('Are you sure you want to deploy in production?'))
-
-    pipeline.addStage(new AppStage(this, 'uat', {
-      env: {account: '160810069147', region: 'us-west-2'}
+    pipeline.addStage(new AppStage(this, 'prod', {
+      env: {region: 'eu-central-1'}
     }))
 
   }
