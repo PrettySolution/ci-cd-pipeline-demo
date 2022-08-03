@@ -14,7 +14,7 @@ export class DemoPipelineStack extends Stack {
         input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', 'main'),
         commands: ['npm ci', 'npm run build', 'npx cdk synth', 'ls -la'],
         additionalInputs: {
-          'angular': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', 'main', {
+          './angular': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', 'main', {
             trigger: GitHubTrigger.WEBHOOK
           })
         }
