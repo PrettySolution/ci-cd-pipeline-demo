@@ -24,7 +24,7 @@ export class DemoPipelineStack extends Stack {
     pipeline.addStage(new AppStage(this, 'stage', {
       env: {region: 'eu-central-1'}
     }))
-      .addPost(new ManualApprovalStep('Are you sure you want to deploy in production?'))
+      .addPost(new ManualApprovalStep('Deploy in production'))
 
     pipeline.addStage(new AppStage(this, 'prod', {
       env: {region: 'eu-central-1'}
