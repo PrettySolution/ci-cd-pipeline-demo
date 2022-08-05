@@ -10,6 +10,7 @@ export class DemoPipelineStack extends Stack {
 
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
+      crossAccountKeys: true,
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', 'main'),
         commands: ['pwd', 'ls -la', 'ls ../ -la', 'npm ci', 'npm run build', 'npx cdk synth'],
@@ -21,13 +22,13 @@ export class DemoPipelineStack extends Stack {
       })
     })
 
-    pipeline.addStage(new AppStage(this, 'stage', {
-      env: {region: 'eu-central-1'}
+    pipeline.addStage(new AppStage(this, 'my-test', {
+      env: {account: '327109020978', region: 'eu-central-1'},
     }))
       .addPost(new ManualApprovalStep('Deploy in production'))
 
-    pipeline.addStage(new AppStage(this, 'prod', {
-      env: {region: 'eu-central-1'}
+    pipeline.addStage(new AppStage(this, 'my-dev', {
+      env: {account: '249111255442', region: 'eu-central-1'},
     }))
 
   }
