@@ -3,19 +3,25 @@ import {Construct} from 'constructs';
 import {CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep} from "aws-cdk-lib/pipelines";
 import {AppStage} from "./app-stage";
 import {GitHubTrigger} from "aws-cdk-lib/aws-codepipeline-actions";
+import {HostedZoneAttributes} from "aws-cdk-lib/aws-route53";
+
+interface DemoPipelineProps extends StackProps {
+  zoneAttrs: HostedZoneAttributes,
+  githubBranch: string
+}
 
 export class DemoPipelineStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: DemoPipelineProps) {
     super(scope, id, props);
 
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
       crossAccountKeys: true,
       synth: new ShellStep('Synth', {
-        input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', 'main'),
-        commands: ['pwd', 'ls -la', 'ls ../ -la', 'npm ci', 'npm run build', 'npx cdk synth'],
+        input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', props.githubBranch),
+        commands: ['pwd', 'ls -la', 'ls ../ -la', 'npm ci', 'npm run build', `npx cdk synth ${props.stackName}`],
         additionalInputs: {
-          '../ci-cd-fe-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', 'main', {
+          '../ci-cd-fe-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', props.githubBranch, {
             trigger: GitHubTrigger.WEBHOOK
           })
         }
@@ -23,20 +29,7 @@ export class DemoPipelineStack extends Stack {
     })
 
     pipeline.addStage(new AppStage(this, 'my-test', {
-      env: {account: '327109020978', region: 'eu-central-1'},
-      zoneAttrs: {
-        zoneName: 'my-test.cortexanalytics.com',
-        hostedZoneId: 'Z10181322ETLT2YW858R6'
-      }
-    }))
-      .addPost(new ManualApprovalStep('Deploy in production'))
-
-    pipeline.addStage(new AppStage(this, 'my-dev', {
-      env: {account: '249111255442', region: 'eu-central-1'},
-      zoneAttrs: {
-        zoneName: 'my-dev.cortexanalytics.com',
-        hostedZoneId: 'Z0142606AXRLLVPT37B0'
-      }
+      zoneAttrs: props.zoneAttrs
     }))
 
   }
