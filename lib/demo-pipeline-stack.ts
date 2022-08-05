@@ -24,11 +24,19 @@ export class DemoPipelineStack extends Stack {
 
     pipeline.addStage(new AppStage(this, 'my-test', {
       env: {account: '327109020978', region: 'eu-central-1'},
+      zoneAttrs: {
+        zoneName: 'my-test.cortexanalytics.com',
+        hostedZoneId: 'Z10181322ETLT2YW858R6'
+      }
     }))
       .addPost(new ManualApprovalStep('Deploy in production'))
 
     pipeline.addStage(new AppStage(this, 'my-dev', {
       env: {account: '249111255442', region: 'eu-central-1'},
+      zoneAttrs: {
+        zoneName: 'my-dev.cortexanalytics.com',
+        hostedZoneId: 'Z0142606AXRLLVPT37B0'
+      }
     }))
 
   }
