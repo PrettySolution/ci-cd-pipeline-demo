@@ -7,7 +7,8 @@ import {HostedZoneAttributes} from "aws-cdk-lib/aws-route53";
 
 interface DemoPipelineProps extends StackProps {
   zoneAttrs: HostedZoneAttributes,
-  githubBranch: string
+  githubBranch: string,
+  isProduction?: boolean
 }
 
 export class DemoPipelineStack extends Stack {
@@ -28,7 +29,7 @@ export class DemoPipelineStack extends Stack {
       })
     })
 
-    pipeline.addStage(new AppStage(this, 'DeployApp', {  // Do not rename stage name
+    pipeline.addStage(new AppStage(this, 'DeployApp', {  // Do not rename stageName
       zoneAttrs: props.zoneAttrs
     }))
 
