@@ -28,7 +28,7 @@ export class DemoPipelineStack extends Stack {
       })
     })
 
-    pipeline.addStage(new AppStage(this, 'my-test', {
+    pipeline.addStage(new AppStage(this, 'DeployApp', {
       zoneAttrs: props.zoneAttrs
     }))
 
