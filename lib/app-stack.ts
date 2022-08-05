@@ -14,7 +14,7 @@ export class AppStack extends Stack {
     const zone = HostedZone.fromHostedZoneAttributes(this, 'HostedZone', props.zoneAttrs)
     new ARecord(this, 'ARecord', {
       zone,
-      target: RecordTarget.fromIpAddresses('1.1.1.1'),
+      target: RecordTarget.fromIpAddresses('4.4.4.4'),
 
 
     })
