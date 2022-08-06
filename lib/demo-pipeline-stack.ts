@@ -16,6 +16,10 @@ export class DemoPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: DemoPipelineProps) {
     super(scope, id, props);
 
+    const BEInput = CodePipelineSource.gitHub('PrettySolution/ci-cd-be-demo', props.githubBranch, {
+      trigger: GitHubTrigger.WEBHOOK
+    })
+
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
       // crossAccountKeys: true,
@@ -26,9 +30,7 @@ export class DemoPipelineStack extends Stack {
           '../ci-cd-fe-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', props.githubBranch, {
             trigger: GitHubTrigger.WEBHOOK
           }),
-          '../ci-cd-be-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-be-demo', props.githubBranch, {
-            trigger: GitHubTrigger.WEBHOOK
-          })
+          '../ci-cd-be-demo': BEInput
         }
       })
     })
@@ -37,6 +39,7 @@ export class DemoPipelineStack extends Stack {
       zoneAttrs: props.zoneAttrs
     }))
     deploy.addPre(new ShellStep('RunMigration', {
+      input: BEInput,
       commands: ['uname -a', 'pwd', 'ls -la', 'ls ../ -la']
     }))
 
