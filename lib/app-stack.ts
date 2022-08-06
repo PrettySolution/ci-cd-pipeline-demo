@@ -1,4 +1,4 @@
-import {Stack, StackProps} from "aws-cdk-lib";
+import {CfnOutput, Stack, StackProps} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {HostedZone, HostedZoneAttributes} from "aws-cdk-lib/aws-route53";
 import {Credentials, DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion} from "aws-cdk-lib/aws-rds";
@@ -10,15 +10,15 @@ export interface IAppStackProps extends StackProps {
 
 export class AppStack extends Stack {
 
-  public vpcName: 'my-cortex'
+  public readonly vpc: Vpc
+  public readonly dbInstance: DatabaseInstance
 
   constructor(scope: Construct, id: string, props: IAppStackProps) {
     super(scope, id, props);
 
     const zone = HostedZone.fromHostedZoneAttributes(this, 'HostedZone', props.zoneAttrs)
 
-    const vpc = new Vpc(this, 'Vpc', {
-      vpcName: this.vpcName,
+    this.vpc = new Vpc(this, 'Vpc', {
       cidr: "10.0.0.0/16",
       natGateways: 1,
       subnetConfiguration: [
@@ -35,19 +35,20 @@ export class AppStack extends Stack {
       ],
     })
 
-    const dbInstance = new DatabaseInstance(this, 'DatabaseInstance', {
+    this.dbInstance = new DatabaseInstance(this, 'DatabaseInstance', {
       instanceIdentifier: 'cortex-pg',
-      vpc,
+      vpc: this.vpc,
       engine: DatabaseInstanceEngine.postgres({version: PostgresEngineVersion.VER_14_2}),
       instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
-      credentials: Credentials.fromUsername('postgres', {secretName: `pg-secret-for-${props.stackName}`}),
+      credentials: Credentials.fromUsername('postgres', {secretName: 'pg-secret-cortex'}),
       vpcSubnets: {subnetType: SubnetType.PUBLIC},
       allocatedStorage: 20,
       maxAllocatedStorage: 40,
       multiAz: false,
     })
-    dbInstance.connections.allowFromAnyIpv4(Port.tcp(dbInstance.instanceEndpoint.port))
+    this.dbInstance.connections.allowFromAnyIpv4(Port.tcp(this.dbInstance.instanceEndpoint.port))
 
+    new CfnOutput(this, 'pgSecretName', {value: this.dbInstance.secret?.secretName || ''})
 
   }
 }
