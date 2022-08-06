@@ -107,7 +107,7 @@ export class AppStack extends Stack {
       cpu: 256,
       memoryLimitMiB: 512,
       runtimePlatform: {
-        cpuArchitecture: CpuArchitecture.X86_64,
+        cpuArchitecture: CpuArchitecture.ARM64,
         operatingSystemFamily: OperatingSystemFamily.LINUX
       }
     })
