@@ -5,6 +5,7 @@ import {AppStage} from "./app-stage";
 import {GitHubTrigger} from "aws-cdk-lib/aws-codepipeline-actions";
 import {HostedZoneAttributes} from "aws-cdk-lib/aws-route53";
 import {LinuxArmBuildImage, LinuxBuildImage} from "aws-cdk-lib/aws-codebuild";
+import {Secret} from "aws-cdk-lib/aws-secretsmanager";
 
 interface DemoPipelineProps extends StackProps {
   zoneAttrs: HostedZoneAttributes,
@@ -17,6 +18,8 @@ export class DemoPipelineStack extends Stack {
     super(scope, id, props);
 
     const BEInput = CodePipelineSource.gitHub('PrettySolution/ci-cd-be-demo', props.githubBranch)
+    const pgSecret = Secret.fromSecretNameV2(this, 'pgSecretCortex', 'pgSecretCortex')
+    const pgCredentials = pgSecret.secretValue.toJSON()
 
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
@@ -36,7 +39,8 @@ export class DemoPipelineStack extends Stack {
     }))
     deploy.addPre(new ShellStep('RunMigration', {
       input: BEInput,
-      commands: ['uname -a', 'pwd', 'ls -la', 'ls ../ -la']
+      commands: ['echo $PG_CREDENTIALS'],
+      env: {'PG_CREDENTIALS': pgCredentials}
     }))
 
   }
