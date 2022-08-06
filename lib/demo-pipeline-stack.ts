@@ -4,6 +4,7 @@ import {CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep} from "a
 import {AppStage} from "./app-stage";
 import {GitHubTrigger} from "aws-cdk-lib/aws-codepipeline-actions";
 import {HostedZoneAttributes} from "aws-cdk-lib/aws-route53";
+import {LinuxArmBuildImage, LinuxBuildImage} from "aws-cdk-lib/aws-codebuild";
 
 interface DemoPipelineProps extends StackProps {
   zoneAttrs: HostedZoneAttributes,
@@ -17,6 +18,7 @@ export class DemoPipelineStack extends Stack {
 
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
+      codeBuildDefaults: {buildEnvironment: {buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0}},
       // crossAccountKeys: true,
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', props.githubBranch),
