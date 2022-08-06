@@ -18,7 +18,6 @@ export class DemoPipelineStack extends Stack {
 
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
-      codeBuildDefaults: {buildEnvironment: {buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0}},
       // crossAccountKeys: true,
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', props.githubBranch),
