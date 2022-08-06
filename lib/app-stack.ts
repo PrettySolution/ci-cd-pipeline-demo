@@ -1,6 +1,6 @@
 import {CfnOutput, Duration, RemovalPolicy, Stack, StackProps} from "aws-cdk-lib";
 import {Construct} from "constructs";
-import {HostedZone, HostedZoneAttributes} from "aws-cdk-lib/aws-route53";
+import {ARecord, HostedZone, HostedZoneAttributes, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {
   Credentials,
   DatabaseInstance,
@@ -30,6 +30,7 @@ import {
 import {DnsValidatedCertificate} from "aws-cdk-lib/aws-certificatemanager";
 import {LogGroup, RetentionDays} from "aws-cdk-lib/aws-logs";
 import {ApplicationLoadBalancer} from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import {LoadBalancerTarget} from "aws-cdk-lib/aws-route53-targets";
 
 export interface IAppStackProps extends StackProps {
   zoneAttrs: HostedZoneAttributes
@@ -173,6 +174,11 @@ export class AppStack extends Stack {
         healthyThresholdCount: 5,  // default 5
         healthyHttpCodes: '200'  // default '200'
       },
+    })
+
+    new ARecord(this, 'ARecord', {
+      zone: hostedZone,
+      target: RecordTarget.fromAlias(new LoadBalancerTarget(lb))
     })
 
     new CfnOutput(this, 'pgSecretName', {value: pgSecret.secretName})
