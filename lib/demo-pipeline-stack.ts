@@ -18,7 +18,7 @@ export class DemoPipelineStack extends Stack {
 
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
-      codeBuildDefaults: {buildEnvironment: {buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0}},
+      codeBuildDefaults: {buildEnvironment: {buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0}},
       // crossAccountKeys: true,
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', props.githubBranch),
@@ -31,8 +31,11 @@ export class DemoPipelineStack extends Stack {
       })
     })
 
-    pipeline.addStage(new AppStage(this, 'DeployApp', {  // Do not rename stageName
+    const deploy = pipeline.addStage(new AppStage(this, 'DeployApp', {  // Do not rename stageName
       zoneAttrs: props.zoneAttrs
+    }))
+    deploy.addPre(new ShellStep('RunMigration', {
+      commands: ['uname -a', 'pwd', 'ls -la', 'ls ../ -la']
     }))
 
   }
