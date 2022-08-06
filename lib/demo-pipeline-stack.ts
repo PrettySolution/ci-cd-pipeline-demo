@@ -20,7 +20,7 @@ export class DemoPipelineStack extends Stack {
       // crossAccountKeys: true,
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', props.githubBranch),
-        commands: ['uname -a', 'pwd', 'ls -la', 'ls ../ -la', 'npm ci', 'npm run build', 'npx cdk synth'],
+        commands: ['uname -a', 'pwd', 'ls -la', 'ls ../ -la', 'npm ci', 'npm run build', `npx cdk synth ${this.stackName}`],
         additionalInputs: {
           '../ci-cd-fe-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', props.githubBranch, {
             trigger: GitHubTrigger.WEBHOOK
