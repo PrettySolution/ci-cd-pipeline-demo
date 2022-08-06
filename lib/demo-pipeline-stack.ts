@@ -19,7 +19,7 @@ export class DemoPipelineStack extends Stack {
 
     const BEInput = CodePipelineSource.gitHub('PrettySolution/ci-cd-be-demo', props.githubBranch)
     const pgSecret = Secret.fromSecretNameV2(this, 'pgSecretCortex', 'pgSecretCortex')
-    const pgCredentials = pgSecret.secretValue.toJSON()
+    const pgCredentials = pgSecret.secretValue.toString()
 
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
