@@ -16,9 +16,7 @@ export class DemoPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: DemoPipelineProps) {
     super(scope, id, props);
 
-    const BEInput = CodePipelineSource.gitHub('PrettySolution/ci-cd-be-demo', props.githubBranch, {
-      trigger: GitHubTrigger.WEBHOOK
-    })
+    const BEInput = CodePipelineSource.gitHub('PrettySolution/ci-cd-be-demo', props.githubBranch)
 
     const pipeline = new CodePipeline(this, 'pipeline', {
       pipelineName: 'demo-pipeline',
@@ -27,9 +25,7 @@ export class DemoPipelineStack extends Stack {
         input: CodePipelineSource.gitHub('PrettySolution/ci-cd-pipeline-demo', props.githubBranch),
         commands: ['uname -a', 'pwd', 'ls -la', 'ls ../ -la', 'npm ci', 'npm run build', `npx cdk synth ${this.stackName}`],
         additionalInputs: {
-          '../ci-cd-fe-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', props.githubBranch, {
-            trigger: GitHubTrigger.WEBHOOK
-          }),
+          '../ci-cd-fe-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', props.githubBranch),
           '../ci-cd-be-demo': BEInput
         }
       })
