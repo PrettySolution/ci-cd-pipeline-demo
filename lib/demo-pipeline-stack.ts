@@ -25,6 +25,9 @@ export class DemoPipelineStack extends Stack {
         additionalInputs: {
           '../ci-cd-fe-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-fe-demo', props.githubBranch, {
             trigger: GitHubTrigger.WEBHOOK
+          }),
+          '../ci-cd-be-demo': CodePipelineSource.gitHub('PrettySolution/ci-cd-be-demo', props.githubBranch, {
+            trigger: GitHubTrigger.WEBHOOK
           })
         }
       })
