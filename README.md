@@ -27,4 +27,4 @@ cdk bootstrap 444444444444/ap-southeast-1 --no-bootstrap-customer-key --cloudfor
 #### And all the other accounts and regions (account 111111111111 as an example):
 cdk bootstrap 111111111111/ap-southeast-1 --no-bootstrap-customer-key --cloudformation-execution-policies 'arn:aws:iam::aws:policy/AdministratorAccess' --trust 444444444444 --trust-for-lookup 444444444444
 Obviously replace the account numbers and region with your own.
-Caution: once you have done this, anyone who has permission to deploy CDK in your Tools account can use the same credentials to deploy to any of the trusted accounts. This is handy in dev and personal accounts, but maybe not what you want in production.
+Caution : once you have done this, anyone who has permission to deploy CDK in your Tools account can use the same credentials to deploy to any of the trusted accounts. This is handy in dev and personal accounts, but maybe not what you want in production.
